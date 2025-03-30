@@ -105,13 +105,11 @@ bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::RunImpl() {
     }
   }
 
-  // Объединение результатов
   for (int t = 0; t < omp_get_max_threads(); t++) {
     output_val_.insert(output_val_.end(), local_val[t].begin(), local_val[t].end());
     output_col_.insert(output_col_.end(), local_col[t].begin(), local_col[t].end());
   }
 
-  // Префиксная сумма
   for (i = 1; i < A_N_; i++) {
     output_rI_[i] += output_rI_[i - 1] + temp_rI[i];
   }
