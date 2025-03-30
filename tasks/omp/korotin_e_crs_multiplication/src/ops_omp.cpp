@@ -81,13 +81,13 @@ bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::RunImpl() {
   std::vector<int> temp_rI(A_N_, 0);
 
 #pragma omp parallel for private(j, sum, ai, bt)
-  for (i = 0; i < A_N_ - 1; i++) {
+  for (int k = 0; k < static_cast<int>(A_N_ - 1); k++) {
     int thread_id = omp_get_thread_num();
     for (j = 0; j < tr_i.size() - 1; j++) {
       sum = 0;
-      ai = A_rI_[i];
+      ai = A_rI_[k];
       bt = tr_i[j];
-      while (ai < A_rI_[i + 1] && bt < tr_i[j + 1]) {
+      while (ai < A_rI_[k + 1] && bt < tr_i[j + 1]) {
         if (A_col_[ai] == tcol[bt]) {
           sum += A_val_[ai] * tval[bt];
           ai++;
@@ -101,7 +101,7 @@ bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::RunImpl() {
       if (sum != 0) {
         local_val[thread_id].push_back(sum);
         local_col[thread_id].push_back(j);
-        temp_rI[i + 1]++;
+        temp_rI[k + 1]++;
       }
     }
   }
