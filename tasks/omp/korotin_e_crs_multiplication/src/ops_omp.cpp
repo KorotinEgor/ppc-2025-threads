@@ -1,9 +1,10 @@
 #include "omp/korotin_e_crs_multiplication/include/ops_omp.hpp"
 
+#include <omp.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <omp.h>
 #include <vector>
 
 bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::PreProcessingImpl() {
