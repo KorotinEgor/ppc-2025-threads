@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <cstdint>
 #include <memory>
 #include <random>
@@ -116,18 +115,6 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_50_50_50) {
   korotin_e_crs_multiplication_tbb::MatrixMultiplication(a, b, c, m, n, p);
 
   korotin_e_crs_multiplication_tbb::MakeCRS(c_ri, c_col, c_val, c, m, p);
-  /*ASSERT_EQ(c_val.size(), out_val.size());
-  bool flag = true;
-  for (size_t k = 0; k < c_val.size(); k++) {
-    if (c_val[k] != out_val[k]) {
-      std::cout << "C:   " << c_val[k] << std::endl;
-      std::cout << "OUT: " << out_val[k] << std::endl;
-      flag = false;
-    }
-  }
-  if (flag)
-    std::cout << "\nKAKOGO HERA" << std::endl;
-  else std::cout << "\nEI TY, MUDILA" << std::endl;*/
   ASSERT_EQ(c_ri, out_ri);
   ASSERT_EQ(c_col, out_col);
   ASSERT_EQ(c_val, out_val);

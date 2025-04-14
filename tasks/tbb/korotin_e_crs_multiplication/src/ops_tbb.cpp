@@ -2,14 +2,13 @@
 
 #include <tbb/tbb.h>
 
-#include <iostream>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <vector>
 
-#include "oneapi/tbb/task_arena.h"
 #include "oneapi/tbb/info.h"
+#include "oneapi/tbb/task_arena.h"
 
 bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::PreProcessingImpl() {
   A_N_ = task_data->inputs_count[0];
@@ -81,8 +80,7 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
   std::vector<std::vector<int>> local_col(A_N_);
   std::vector<unsigned int> temp_rI(A_N_, 0);
 
-  tbb::parallel_for(tbb::blocked_range<size_t>(0, A_N_ - 1),
-                    [&](const tbb::blocked_range<size_t>& r) {
+  tbb::parallel_for(tbb::blocked_range<size_t>(0, A_N_ - 1), [&](const tbb::blocked_range<size_t> &r) {
     for (size_t k = r.begin(); k != r.end(); ++k) {
       for (size_t s = 0; s < tr_i.size() - 1; ++s) {
         double sum = 0;
@@ -106,8 +104,7 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
         }
       }
     }
-    }
-  );
+  });
 
   for (unsigned int t = 0; t < A_N_; ++t) {
     output_val_.insert(output_val_.end(), local_val[t].begin(), local_val[t].end());
