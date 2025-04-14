@@ -9,6 +9,7 @@
 
 #include "oneapi/tbb/info.h"
 #include "oneapi/tbb/task_arena.h"
+#include "oneapi/tbb/task_group.h"
 
 bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::PreProcessingImpl() {
   A_N_ = task_data->inputs_count[0];
@@ -48,6 +49,36 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::ValidationImpl() {
              task_data->inputs_count[3] - 2;
 }
 
+void korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::MulTask(size_t l, size_t r, std::vector<double> &local_val,
+                                                                     std::vector<int> &local_col, std::vector<unsigned int> &temp_rI,
+                                                                     const std::vector<unsigned int> &tr_i,
+                                                                     const std::vector<unsigned int> &tcol,
+                                                                     const std::vector<double> &tval) {
+  for (size_t k = l; k < r; ++k) {
+    for (size_t s = 0; s < tr_i.size() - 1; ++s) {
+      double sum = 0;
+      unsigned int ai = A_rI_[k];
+      unsigned int bt = tr_i[s];
+      while (ai < A_rI_[k + 1] && bt < tr_i[s + 1]) {
+        if (A_col_[ai] == tcol[bt]) {
+          sum += A_val_[ai] * tval[bt];
+          ai++;
+          bt++;
+        } else if (A_col_[ai] < tcol[bt]) {
+          ai++;
+        } else {
+          bt++;
+        }
+      }
+      if (sum != 0) {
+        local_val.push_back(sum);
+        local_col.push_back(s);
+        temp_rI[k + 1]++;
+      }
+    }
+  }
+}
+
 bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
   std::vector<unsigned int> tr_i(*std::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
   unsigned int i = 0;
@@ -76,37 +107,30 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
   std::fill(output_rI_.begin(), output_rI_.end(), 0);
   output_col_.clear();
   output_val_.clear();
-  std::vector<std::vector<double>> local_val(A_N_);
-  std::vector<std::vector<int>> local_col(A_N_);
+  unsigned int MAGIC_CONST = 4;
+  std::vector<std::vector<double>> local_val(MAGIC_CONST);
+  std::vector<std::vector<int>> local_col(MAGIC_CONST);
   std::vector<unsigned int> temp_rI(A_N_, 0);
+  tbb::task_group tg;
 
-  tbb::parallel_for(tbb::blocked_range<size_t>(0, A_N_ - 1), [&](const tbb::blocked_range<size_t> &r) {
-    for (size_t k = r.begin(); k != r.end(); ++k) {
-      for (size_t s = 0; s < tr_i.size() - 1; ++s) {
-        double sum = 0;
-        unsigned int ai = A_rI_[k];
-        unsigned int bt = tr_i[s];
-        while (ai < A_rI_[k + 1] && bt < tr_i[s + 1]) {
-          if (A_col_[ai] == tcol[bt]) {
-            sum += A_val_[ai] * tval[bt];
-            ai++;
-            bt++;
-          } else if (A_col_[ai] < tcol[bt]) {
-            ai++;
-          } else {
-            bt++;
-          }
-        }
-        if (sum != 0) {
-          local_val[k].push_back(sum);
-          local_col[k].push_back(s);
-          temp_rI[k + 1]++;
-        }
-      }
-    }
-  });
+  std::vector<size_t> delta(MAGIC_CONST, A_N_ / MAGIC_CONST);
+  for (i = 0; i < (A_N_ - 1) % MAGIC_CONST; ++i) {
+    delta[i]++;
+  }
+  for (i = 1; i < MAGIC_CONST; ++i) {
+    delta[i] += delta[i - 1];
+  }
 
-  for (unsigned int t = 0; t < A_N_; ++t) {
+  tg.run([this, &delta, &local_val, &local_col, &temp_rI, &tr_i, &tcol, &tval]
+         { MulTask(0, delta[0], local_val[0], local_col[0], temp_rI, tr_i, tcol, tval); });
+  for (i = 1; i < MAGIC_CONST; ++i) {
+    tg.run([this, &delta, &local_val, &local_col, &temp_rI, &tr_i, &tcol, &tval, i]
+           { MulTask(delta[i - 1], delta[i], local_val[i], local_col[i], temp_rI, tr_i, tcol, tval); });
+  }
+
+  tg.wait();
+
+  for (unsigned int t = 0; t < MAGIC_CONST; ++t) {
     output_val_.insert(output_val_.end(), local_val[t].begin(), local_val[t].end());
     output_col_.insert(output_col_.end(), local_col[t].begin(), local_col[t].end());
   }

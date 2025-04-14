@@ -79,6 +79,7 @@ bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::RunImpl() {
   std::vector<std::vector<double>> local_val(omp_get_max_threads());
   std::vector<std::vector<int>> local_col(omp_get_max_threads());
   std::vector<int> temp_rI(A_N_, 0);
+  std::vector<std::vector<size_t>> TMP(4);
 
 #pragma omp parallel for private(j, sum, ai, bt)
   for (int k = 0; k < static_cast<int>(A_N_ - 1); k++) {
