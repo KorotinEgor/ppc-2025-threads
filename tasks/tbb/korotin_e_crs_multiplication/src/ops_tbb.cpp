@@ -49,11 +49,9 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::ValidationImpl() {
              task_data->inputs_count[3] - 2;
 }
 
-void korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::MulTask(size_t l, size_t r, std::vector<double> &local_val,
-                                                                     std::vector<int> &local_col, std::vector<unsigned int> &temp_rI,
-                                                                     const std::vector<unsigned int> &tr_i,
-                                                                     const std::vector<unsigned int> &tcol,
-                                                                     const std::vector<double> &tval) {
+void korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::MulTask(
+    size_t l, size_t r, std::vector<double> &local_val, std::vector<int> &local_col, std::vector<unsigned int> &temp_rI,
+    const std::vector<unsigned int> &tr_i, const std::vector<unsigned int> &tcol, const std::vector<double> &tval) {
   for (size_t k = l; k < r; ++k) {
     for (size_t s = 0; s < tr_i.size() - 1; ++s) {
       double sum = 0;
@@ -121,11 +119,13 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
     delta[i] += delta[i - 1];
   }
 
-  tg.run([this, &delta, &local_val, &local_col, &temp_rI, &tr_i, &tcol, &tval]
-         { MulTask(0, delta[0], local_val[0], local_col[0], temp_rI, tr_i, tcol, tval); });
+  tg.run([this, &delta, &local_val, &local_col, &temp_rI, &tr_i, &tcol, &tval] {
+    MulTask(0, delta[0], local_val[0], local_col[0], temp_rI, tr_i, tcol, tval);
+  });
   for (i = 1; i < MAGIC_CONST; ++i) {
-    tg.run([this, &delta, &local_val, &local_col, &temp_rI, &tr_i, &tcol, &tval, i]
-           { MulTask(delta[i - 1], delta[i], local_val[i], local_col[i], temp_rI, tr_i, tcol, tval); });
+    tg.run([this, &delta, &local_val, &local_col, &temp_rI, &tr_i, &tcol, &tval, i] {
+      MulTask(delta[i - 1], delta[i], local_val[i], local_col[i], temp_rI, tr_i, tcol, tval);
+    });
   }
 
   tg.wait();
