@@ -338,9 +338,9 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_7_6_9) {
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_ri.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_col.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_val.data()));
-  std::cout<< "a_ri.sz =  " << a_ri.size() << std::endl;
-  std::cout<< "a_col.sz = " << a_col.size() << std::endl;
-  std::cout<< "a_val.sz = " << a_val.size() << std::endl;
+  std::cout << "a_ri.sz =  " << a_ri.size() << std::endl;
+  std::cout << "a_col.sz = " << a_col.size() << std::endl;
+  std::cout << "a_val.sz = " << a_val.size() << std::endl;
   task_data_tbb->inputs_count.emplace_back(a_ri.size());
   task_data_tbb->inputs_count.emplace_back(a_col.size());
   task_data_tbb->inputs_count.emplace_back(a_val.size());
