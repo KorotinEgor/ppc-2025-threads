@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 #include <vector>
 
 #include "oneapi/tbb/task_group.h"
@@ -119,7 +120,11 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
   for (i = 1; i < magic_const; ++i) {
     delta[i] += delta[i - 1];
   }
-
+  std::cout << "start multiplication" << std::endl;
+  std::cout << "A_N_ = " << A_N_ << std::endl;
+  for (i = 0; i < magic_const; ++i) {
+    std::cout << "delta[" << i << "] = " << delta[i] << std::endl;
+  }
   tg.run([this, &delta, &local_val, &local_col, &temp_r_i, &tr_i, &tcol, &tval] {
     MulTask(0, delta[0], local_val[0], local_col[0], temp_r_i, tr_i, tcol, tval);
   });
@@ -128,7 +133,7 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
       MulTask(delta[i - 1], delta[i], local_val[i], local_col[i], temp_r_i, tr_i, tcol, tval);
     });
   }
-
+  std::cout << "end multiplication" << std::endl;
   tg.wait();
 
   for (unsigned int t = 0; t < magic_const; ++t) {
