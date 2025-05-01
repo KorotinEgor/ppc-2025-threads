@@ -318,6 +318,9 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_7_6_9) {
   const unsigned int m = 7;
   const unsigned int n = 6;
   const unsigned int p = 9;
+  std::cout << "\nm = " << m << std::endl;
+  std::cout << "\nn = " << n << std::endl;
+  std::cout << "\np = " << p << std::endl;
   std::vector<double> a;
   std::vector<double> b;
   std::vector<double> a_val;
@@ -330,7 +333,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_7_6_9) {
   b = korotin_e_crs_multiplication_tbb::GetRandomMatrix(n, p);
   korotin_e_crs_multiplication_tbb::MakeCRS(a_ri, a_col, a_val, a, m, n);
   korotin_e_crs_multiplication_tbb::MakeCRS(b_ri, b_col, b_val, b, n, p);
-
+  std::cout << "Im here1" << std::endl;
   auto task_data_tbb = std::make_shared<ppc::core::TaskData>();
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_ri.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_col.data()));
@@ -345,7 +348,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_7_6_9) {
   task_data_tbb->inputs_count.emplace_back(b_ri.size());
   task_data_tbb->inputs_count.emplace_back(b_col.size());
   task_data_tbb->inputs_count.emplace_back(b_val.size());
-
+  std::cout << "Im here2" << std::endl;
   std::vector<unsigned int> out_ri(a_ri.size(), 0);
   std::vector<unsigned int> out_col(m * p);
   std::vector<double> out_val(m * p);
@@ -353,29 +356,33 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_7_6_9) {
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
   task_data_tbb->outputs_count.emplace_back(out_ri.size());
-
+  std::cout << "Im here3" << std::endl;
   korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB test_task_tbb(task_data_tbb);
   ASSERT_EQ(test_task_tbb.Validation(), true);
   test_task_tbb.PreProcessing();
   test_task_tbb.Run();
   test_task_tbb.PostProcessing();
-
+  std::cout << "Im here4" << std::endl;
   std::vector<double> c(m * p, 0);
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
   korotin_e_crs_multiplication_tbb::MatrixMultiplication(a, b, c, m, n, p);
-
+  std::cout << "Im here5" << std::endl;
   korotin_e_crs_multiplication_tbb::MakeCRS(c_ri, c_col, c_val, c, m, p);
   ASSERT_EQ(c_ri, out_ri);
   ASSERT_EQ(c_col, out_col);
   ASSERT_EQ(c_val, out_val);
+  std::cout << "Im here6" << std::endl;
 }
 
 TEST(korotin_e_crs_multiplication_tbb, test_rnd_27_39_33) {
   const unsigned int m = 27;
   const unsigned int n = 39;
   const unsigned int p = 33;
+  std::cout << "\nm = " << m << std::endl;
+  std::cout << "\nn = " << n << std::endl;
+  std::cout << "\np = " << p << std::endl;
   std::vector<double> a;
   std::vector<double> b;
   std::vector<double> a_val;
@@ -388,7 +395,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_27_39_33) {
   b = korotin_e_crs_multiplication_tbb::GetRandomMatrix(n, p);
   korotin_e_crs_multiplication_tbb::MakeCRS(a_ri, a_col, a_val, a, m, n);
   korotin_e_crs_multiplication_tbb::MakeCRS(b_ri, b_col, b_val, b, n, p);
-
+  std::cout << "Im here1" << std::endl;
   auto task_data_tbb = std::make_shared<ppc::core::TaskData>();
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_ri.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_col.data()));
@@ -403,7 +410,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_27_39_33) {
   task_data_tbb->inputs_count.emplace_back(b_ri.size());
   task_data_tbb->inputs_count.emplace_back(b_col.size());
   task_data_tbb->inputs_count.emplace_back(b_val.size());
-
+  std::cout << "Im here2" << std::endl;
   std::vector<unsigned int> out_ri(a_ri.size(), 0);
   std::vector<unsigned int> out_col(m * p);
   std::vector<double> out_val(m * p);
@@ -411,29 +418,33 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_27_39_33) {
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
   task_data_tbb->outputs_count.emplace_back(out_ri.size());
-
+  std::cout << "Im here3" << std::endl;
   korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB test_task_tbb(task_data_tbb);
   ASSERT_EQ(test_task_tbb.Validation(), true);
   test_task_tbb.PreProcessing();
   test_task_tbb.Run();
   test_task_tbb.PostProcessing();
-
+  std::cout << "Im here4" << std::endl;
   std::vector<double> c(m * p, 0);
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
   korotin_e_crs_multiplication_tbb::MatrixMultiplication(a, b, c, m, n, p);
-
+  std::cout << "Im here5" << std::endl;
   korotin_e_crs_multiplication_tbb::MakeCRS(c_ri, c_col, c_val, c, m, p);
   ASSERT_EQ(c_ri, out_ri);
   ASSERT_EQ(c_col, out_col);
   ASSERT_EQ(c_val, out_val);
+  std::cout << "Im here6" << std::endl;
 }
 
 TEST(korotin_e_crs_multiplication_tbb, test_rnd_23_7_24) {
   const unsigned int m = 23;
   const unsigned int n = 7;
   const unsigned int p = 24;
+  std::cout << "\nm = " << m << std::endl;
+  std::cout << "\nn = " << n << std::endl;
+  std::cout << "\np = " << p << std::endl;
   std::vector<double> a;
   std::vector<double> b;
   std::vector<double> a_val;
@@ -446,7 +457,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_23_7_24) {
   b = korotin_e_crs_multiplication_tbb::GetRandomMatrix(n, p);
   korotin_e_crs_multiplication_tbb::MakeCRS(a_ri, a_col, a_val, a, m, n);
   korotin_e_crs_multiplication_tbb::MakeCRS(b_ri, b_col, b_val, b, n, p);
-
+  std::cout << "Im here1" << std::endl;
   auto task_data_tbb = std::make_shared<ppc::core::TaskData>();
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_ri.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_col.data()));
@@ -461,7 +472,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_23_7_24) {
   task_data_tbb->inputs_count.emplace_back(b_ri.size());
   task_data_tbb->inputs_count.emplace_back(b_col.size());
   task_data_tbb->inputs_count.emplace_back(b_val.size());
-
+  std::cout << "Im here2" << std::endl;
   std::vector<unsigned int> out_ri(a_ri.size(), 0);
   std::vector<unsigned int> out_col(m * p);
   std::vector<double> out_val(m * p);
@@ -469,29 +480,33 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_23_7_24) {
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
   task_data_tbb->outputs_count.emplace_back(out_ri.size());
-
+  std::cout << "Im here3" << std::endl;
   korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB test_task_tbb(task_data_tbb);
   ASSERT_EQ(test_task_tbb.Validation(), true);
   test_task_tbb.PreProcessing();
   test_task_tbb.Run();
   test_task_tbb.PostProcessing();
-
+  std::cout << "Im here4" << std::endl;
   std::vector<double> c(m * p, 0);
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
   korotin_e_crs_multiplication_tbb::MatrixMultiplication(a, b, c, m, n, p);
-
+  std::cout << "Im here5" << std::endl;
   korotin_e_crs_multiplication_tbb::MakeCRS(c_ri, c_col, c_val, c, m, p);
   ASSERT_EQ(c_ri, out_ri);
   ASSERT_EQ(c_col, out_col);
   ASSERT_EQ(c_val, out_val);
+  std::cout << "Im here6" << std::endl;
 }
 
 TEST(korotin_e_crs_multiplication_tbb, test_rnd_3_33_44) {
   const unsigned int m = 3;
   const unsigned int n = 33;
   const unsigned int p = 44;
+  std::cout << "\nm = " << m << std::endl;
+  std::cout << "\nn = " << n << std::endl;
+  std::cout << "\np = " << p << std::endl;
   std::vector<double> a;
   std::vector<double> b;
   std::vector<double> a_val;
@@ -504,7 +519,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_3_33_44) {
   b = korotin_e_crs_multiplication_tbb::GetRandomMatrix(n, p);
   korotin_e_crs_multiplication_tbb::MakeCRS(a_ri, a_col, a_val, a, m, n);
   korotin_e_crs_multiplication_tbb::MakeCRS(b_ri, b_col, b_val, b, n, p);
-
+  std::cout << "Im here1" << std::endl;
   auto task_data_tbb = std::make_shared<ppc::core::TaskData>();
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_ri.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_col.data()));
@@ -519,7 +534,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_3_33_44) {
   task_data_tbb->inputs_count.emplace_back(b_ri.size());
   task_data_tbb->inputs_count.emplace_back(b_col.size());
   task_data_tbb->inputs_count.emplace_back(b_val.size());
-
+  std::cout << "Im here2" << std::endl;
   std::vector<unsigned int> out_ri(a_ri.size(), 0);
   std::vector<unsigned int> out_col(m * p);
   std::vector<double> out_val(m * p);
@@ -527,29 +542,33 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_3_33_44) {
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
   task_data_tbb->outputs_count.emplace_back(out_ri.size());
-
+  std::cout << "Im here3" << std::endl;
   korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB test_task_tbb(task_data_tbb);
   ASSERT_EQ(test_task_tbb.Validation(), true);
   test_task_tbb.PreProcessing();
   test_task_tbb.Run();
   test_task_tbb.PostProcessing();
-
+  std::cout << "Im here4" << std::endl;
   std::vector<double> c(m * p, 0);
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
   korotin_e_crs_multiplication_tbb::MatrixMultiplication(a, b, c, m, n, p);
-
+  std::cout << "Im here5" << std::endl;
   korotin_e_crs_multiplication_tbb::MakeCRS(c_ri, c_col, c_val, c, m, p);
   ASSERT_EQ(c_ri, out_ri);
   ASSERT_EQ(c_col, out_col);
   ASSERT_EQ(c_val, out_val);
+  std::cout << "Im here6" << std::endl;
 }
 
 TEST(korotin_e_crs_multiplication_tbb, test_rnd_19_21_14) {
   const unsigned int m = 19;
   const unsigned int n = 21;
   const unsigned int p = 14;
+  std::cout << "\nm = " << m << std::endl;
+  std::cout << "\nn = " << n << std::endl;
+  std::cout << "\np = " << p << std::endl;
   std::vector<double> a;
   std::vector<double> b;
   std::vector<double> a_val;
@@ -562,7 +581,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_19_21_14) {
   b = korotin_e_crs_multiplication_tbb::GetRandomMatrix(n, p);
   korotin_e_crs_multiplication_tbb::MakeCRS(a_ri, a_col, a_val, a, m, n);
   korotin_e_crs_multiplication_tbb::MakeCRS(b_ri, b_col, b_val, b, n, p);
-
+  std::cout << "Im here1" << std::endl;
   auto task_data_tbb = std::make_shared<ppc::core::TaskData>();
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_ri.data()));
   task_data_tbb->inputs.emplace_back(reinterpret_cast<uint8_t *>(a_col.data()));
@@ -577,7 +596,7 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_19_21_14) {
   task_data_tbb->inputs_count.emplace_back(b_ri.size());
   task_data_tbb->inputs_count.emplace_back(b_col.size());
   task_data_tbb->inputs_count.emplace_back(b_val.size());
-
+  std::cout << "Im here2" << std::endl;
   std::vector<unsigned int> out_ri(a_ri.size(), 0);
   std::vector<unsigned int> out_col(m * p);
   std::vector<double> out_val(m * p);
@@ -585,23 +604,24 @@ TEST(korotin_e_crs_multiplication_tbb, test_rnd_19_21_14) {
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
   task_data_tbb->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
   task_data_tbb->outputs_count.emplace_back(out_ri.size());
-
+  std::cout << "Im here3" << std::endl;
   korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB test_task_tbb(task_data_tbb);
   ASSERT_EQ(test_task_tbb.Validation(), true);
   test_task_tbb.PreProcessing();
   test_task_tbb.Run();
   test_task_tbb.PostProcessing();
-
+  std::cout << "Im here4" << std::endl;
   std::vector<double> c(m * p, 0);
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
   korotin_e_crs_multiplication_tbb::MatrixMultiplication(a, b, c, m, n, p);
-
+  std::cout << "Im here5" << std::endl;
   korotin_e_crs_multiplication_tbb::MakeCRS(c_ri, c_col, c_val, c, m, p);
   ASSERT_EQ(c_ri, out_ri);
   ASSERT_EQ(c_col, out_col);
   ASSERT_EQ(c_val, out_val);
+  std::cout << "Im here6" << std::endl;
 }
 
 TEST(korotin_e_crs_multiplication_tbb, test_rnd_17_37_53) {
