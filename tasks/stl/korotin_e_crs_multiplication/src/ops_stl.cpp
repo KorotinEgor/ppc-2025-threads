@@ -1,10 +1,9 @@
 #include "stl/korotin_e_crs_multiplication/include/ops_stl.hpp"
 
-#include <thread>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <thread>
 #include <vector>
 
 #include "core/util/include/util.hpp"
@@ -107,7 +106,7 @@ bool korotin_e_crs_multiplication_stl::CrsMultiplicationSTL::RunImpl() {
   output_col_.clear();
   output_val_.clear();
   unsigned int magic_const = std::thread::hardware_concurrency();
-  //unsigned int magic_const = ppc::util::GetPPCNumThreads();
+  // unsigned int magic_const = ppc::util::GetPPCNumThreads();
   std::vector<std::vector<double>> local_val(magic_const);
   std::vector<std::vector<unsigned int>> local_col(magic_const);
   std::vector<unsigned int> temp_r_i(A_N_, 0);
@@ -121,12 +120,14 @@ bool korotin_e_crs_multiplication_stl::CrsMultiplicationSTL::RunImpl() {
     delta[i] += delta[i - 1];
   }
 
-  threads.emplace_back(&CrsMultiplicationSTL::MulTask, this, 0, delta[0], std::ref(local_val[0]), std::ref(local_col[0]), std::ref(temp_r_i), std::ref(tr_i), std::ref(tcol), std::ref(tval));
+  threads.emplace_back(&CrsMultiplicationSTL::MulTask, this, 0, delta[0], std::ref(local_val[0]),
+                       std::ref(local_col[0]), std::ref(temp_r_i), std::ref(tr_i), std::ref(tcol), std::ref(tval));
   for (i = 1; i < magic_const; ++i) {
-    threads.emplace_back(&CrsMultiplicationSTL::MulTask, this, delta[i - 1], delta[i], std::ref(local_val[i]), std::ref(local_col[i]), std::ref(temp_r_i), std::ref(tr_i), std::ref(tcol), std::ref(tval));
+    threads.emplace_back(&CrsMultiplicationSTL::MulTask, this, delta[i - 1], delta[i], std::ref(local_val[i]),
+                         std::ref(local_col[i]), std::ref(temp_r_i), std::ref(tr_i), std::ref(tcol), std::ref(tval));
   }
 
-  for (auto& thread : threads) {
+  for (auto &thread : threads) {
     thread.join();
   }
 
