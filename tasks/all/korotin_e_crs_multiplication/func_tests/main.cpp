@@ -9,8 +9,8 @@
 #include <stdexcept>
 #include <vector>
 
-#include "core/task/include/task.hpp"
 #include "all/korotin_e_crs_multiplication/include/ops_all.hpp"
+#include "core/task/include/task.hpp"
 
 namespace korotin_e_crs_multiplication_all {
 

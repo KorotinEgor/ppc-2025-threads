@@ -91,7 +91,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
 
   if (world_.rank() == 0) {
     tr_i_sz = *std::max_element(B_col_.begin(), B_col_.end());
-// printf("World size: %d\n", world_.size());
+  // printf("World size: %d\n", world_.size());
   }
 
   broadcast(world_, tr_i_sz, 0);
@@ -100,26 +100,26 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
   broadcast(world_, B_Nz_, 0);
   broadcast(world_, output_size_, 0);
 
-// printf("%d is here1\n", world_.rank());
+  // printf("%d is here1\n", world_.rank());
 
   std::vector<unsigned int> tr_i(tr_i_sz + 2, 0);
   std::vector<unsigned int> tcol(B_Nz_, 0);
   std::vector<double> tval(B_Nz_, 0);
 
-// printf("%d is here1.5\n", world_.rank());
+  // printf("%d is here1.5\n", world_.rank());
 
   if (world_.rank() == 0) {
     for (i = 0; i < B_Nz_; i++) {
       tr_i[B_col_[i] + 1]++;
     }
 
-// printf("%d is here1.625\n", world_.rank());
+  // printf("%d is here1.625\n", world_.rank());
 
     for (i = 1; i < tr_i.size(); i++) {
       tr_i[i] += tr_i[i - 1];
     }
 
-// printf("%d is here1.75\n", world_.rank());
+  // printf("%d is here1.75\n", world_.rank());
 
     for (i = 0; i < B_N_ - 1; i++) {
       for (j = B_rI_[i]; j < B_rI_[i + 1]; j++) {
@@ -129,7 +129,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
       }
     }
 
-// printf("%d is here1.875\n", world_.rank());
+  // printf("%d is here1.875\n", world_.rank());
 
     for (i = tr_i.size() - 1; i > 0; i--) {
       tr_i[i] = tr_i[i - 1];
@@ -142,7 +142,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
     A_val_ = std::vector<double>(A_Nz_);
   }
 
-// printf("%d is here2\n", world_.rank());
+  // printf("%d is here2\n", world_.rank());
 
   broadcast(world_, A_rI_.data(), A_rI_.size(), 0);
   broadcast(world_, A_col_.data(), A_col_.size(), 0);
@@ -151,7 +151,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
   broadcast(world_, tcol.data(), tcol.size(), 0);
   broadcast(world_, tval.data(), tval.size(), 0);
 
-// printf("%d is here3\n", world_.rank());
+  // printf("%d is here3\n", world_.rank());
 
   unsigned int local_a_n = A_N_ / world_.size();
   size_t start = 0;
@@ -163,7 +163,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
     start = (local_a_n * world_.rank()) + (A_N_ % world_.size());
   }
 
-// printf("%d is here4\n", world_.rank());
+  // printf("%d is here4\n", world_.rank());
 
   output_rI_ = std::vector<unsigned int>(output_size_, 0);
   output_col_.clear();
@@ -175,7 +175,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
   std::vector<unsigned int> temp_r_i(A_N_, 0);
   std::vector<std::thread> threads;
 
-// printf("%d is here5\n", world_.rank());
+  // printf("%d is here5\n", world_.rank());
 
   std::vector<size_t> delta(magic_const, (local_a_n - 1) / magic_const);
   for (i = 0; i < (local_a_n - 1) % magic_const; ++i) {
@@ -186,7 +186,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
     delta[i] += delta[i - 1];
   }
 
-// printf("%d is here6\n", world_.rank());
+  // printf("%d is here6\n", world_.rank());
 
   threads.emplace_back(&CrsMultiplicationALL::MulTask, this, start, delta[0], std::ref(local_val[0]),
                        std::ref(local_col[0]), std::ref(temp_r_i), std::ref(tr_i), std::ref(tcol), std::ref(tval));
@@ -199,14 +199,14 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
     thread.join();
   }
 
-// printf("%d is here7\n", world_.rank());
+  // printf("%d is here7\n", world_.rank());
 
   for (unsigned int t = 0; t < magic_const; ++t) {
     output_val_.insert(output_val_.end(), local_val[t].begin(), local_val[t].end());
     output_col_.insert(output_col_.end(), local_col[t].begin(), local_col[t].end());
   }
 
-// printf("%d is here8\n", world_.rank());
+  // printf("%d is here8\n", world_.rank());
 
   std::vector<std::vector<double>> gathered_val;
   std::vector<std::vector<unsigned int>> gathered_col;
@@ -215,7 +215,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
   gather(world_, output_val_, gathered_val, 0);
   reduce(world_, temp_r_i, temp_r_i_all, std::plus<unsigned int>(), 0);
 
-// printf("%d is here9\n", world_.rank());
+  // printf("%d is here9\n", world_.rank());
 
   if (world_.rank() == 0) {
     output_val_.clear();
@@ -230,7 +230,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
     }
   }
 
-// printf("%d is here10\n", world_.rank());
+  // printf("%d is here10\n", world_.rank());
 
   return true;
 }
