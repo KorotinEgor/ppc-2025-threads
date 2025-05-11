@@ -50,7 +50,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::ValidationImpl() {
                              reinterpret_cast<unsigned int *>(task_data->inputs[1]) + task_data->inputs_count[1]) <=
                task_data->inputs_count[3] - 2;
   }
-  return true; 
+  return true;
 }
 
 void korotin_e_crs_multiplication_all::CrsMultiplicationALL::MulTask(size_t l, size_t r, std::vector<double> &local_val,
@@ -91,7 +91,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
 
   if (world_.rank() == 0) {
     tr_i_sz = *std::max_element(B_col_.begin(), B_col_.end());
-  // printf("World size: %d\n", world_.size());
+    // printf("World size: %d\n", world_.size());
   }
 
   broadcast(world_, tr_i_sz, 0);
@@ -113,13 +113,13 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
       tr_i[B_col_[i] + 1]++;
     }
 
-  // printf("%d is here1.625\n", world_.rank());
+    // printf("%d is here1.625\n", world_.rank());
 
     for (i = 1; i < tr_i.size(); i++) {
       tr_i[i] += tr_i[i - 1];
     }
 
-  // printf("%d is here1.75\n", world_.rank());
+    // printf("%d is here1.75\n", world_.rank());
 
     for (i = 0; i < B_N_ - 1; i++) {
       for (j = B_rI_[i]; j < B_rI_[i + 1]; j++) {
@@ -129,14 +129,13 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
       }
     }
 
-  // printf("%d is here1.875\n", world_.rank());
+    // printf("%d is here1.875\n", world_.rank());
 
     for (i = tr_i.size() - 1; i > 0; i--) {
       tr_i[i] = tr_i[i - 1];
     }
     tr_i[0] = 0;
-  }
-  else {
+  } else {
     A_rI_ = std::vector<unsigned int>(A_N_);
     A_col_ = std::vector<unsigned int>(A_Nz_);
     A_val_ = std::vector<double>(A_Nz_);
@@ -158,8 +157,7 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
   if (world_.rank() < static_cast<int>(A_N_ % world_.size())) {
     local_a_n++;
     start = local_a_n * world_.rank();
-  }
-  else {
+  } else {
     start = (local_a_n * world_.rank()) + (A_N_ % world_.size());
   }
 

@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "all/korotin_e_crs_multiplication/include/ops_all.hpp"
 #include "core/perf/include/perf.hpp"
 #include "core/task/include/task.hpp"
-#include "all/korotin_e_crs_multiplication/include/ops_all.hpp"
 
 TEST(korotin_e_crs_multiplication_all, test_pipeline_run) {
   boost::mpi::communicator world;
