@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include <iostream>
+
 #include "core/task/include/task.hpp"
 #include "seq/korotin_e_crs_multiplication/include/ops_seq.hpp"
 

@@ -16,6 +16,12 @@ TEST(korotin_e_crs_multiplication_all, test_pipeline_run) {
   const unsigned int n = 900;
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
+  std::vector<double> a_val(n * n, 1);
+  std::vector<double> b_val(n * n, 1);
+  std::vector<unsigned int> a_ri(n + 1, 0);
+  std::vector<unsigned int> a_col(n * n);
+  std::vector<unsigned int> b_ri(n + 1, 0);
+  std::vector<unsigned int> b_col(n * n);
   std::vector<unsigned int> out_ri(n + 1, 0);
   std::vector<unsigned int> out_col(n * n);
   std::vector<double> out_val(n * n);
@@ -24,13 +30,6 @@ TEST(korotin_e_crs_multiplication_all, test_pipeline_run) {
   std::vector<double> c_val(n * n, n);
 
   if (world.rank() == 0) {
-    std::vector<double> a_val(n * n, 1);
-    std::vector<double> b_val(n * n, 1);
-    std::vector<unsigned int> a_ri(n + 1, 0);
-    std::vector<unsigned int> a_col(n * n);
-    std::vector<unsigned int> b_ri(n + 1, 0);
-    std::vector<unsigned int> b_col(n * n);
-
     for (unsigned int i = 0; i < n; i++) {
       for (unsigned int j = 0; j < n; j++) {
         a_col[(i * n) + j] = j;
@@ -94,6 +93,12 @@ TEST(korotin_e_crs_multiplication_all, test_task_run) {
   const unsigned int n = 900;
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
+  std::vector<double> a_val(n * n, 1);
+  std::vector<double> b_val(n * n, 1);
+  std::vector<unsigned int> a_ri(n + 1, 0);
+  std::vector<unsigned int> a_col(n * n);
+  std::vector<unsigned int> b_ri(n + 1, 0);
+  std::vector<unsigned int> b_col(n * n);
   std::vector<unsigned int> out_ri(n + 1, 0);
   std::vector<unsigned int> out_col(n * n);
   std::vector<double> out_val(n * n);
@@ -102,13 +107,6 @@ TEST(korotin_e_crs_multiplication_all, test_task_run) {
   std::vector<double> c_val(n * n, n);
 
   if (world.rank() == 0) {
-    std::vector<double> a_val(n * n, 1);
-    std::vector<double> b_val(n * n, 1);
-    std::vector<unsigned int> a_ri(n + 1, 0);
-    std::vector<unsigned int> a_col(n * n);
-    std::vector<unsigned int> b_ri(n + 1, 0);
-    std::vector<unsigned int> b_col(n * n);
-
     for (unsigned int i = 0; i < n; i++) {
       for (unsigned int j = 0; j < n; j++) {
         a_col[(i * n) + j] = j;

@@ -71,6 +71,14 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_50_50_50) {
   const unsigned int n = 50;
   const unsigned int p = 50;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
@@ -81,14 +89,6 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_50_50_50) {
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
     korotin_e_crs_multiplication_all::MakeCRS(a_ri, a_col, a_val, a, m, n);
@@ -138,24 +138,24 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs_stat_zeroes) {
   const unsigned int n = 50;
   const unsigned int p = 50;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
   std::vector<unsigned int> out_ri;
-  std::vector<unsigned int> out_col(m * p);
-  std::vector<double> out_val(m * p);
+  std::vector<unsigned int> out_col;
+  std::vector<double> out_val;
 
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
     for (unsigned int i = 0; i < (m * n) / 2; i++) {
@@ -182,15 +182,18 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs_stat_zeroes) {
     task_data_all->inputs_count.emplace_back(b_col.size());
     task_data_all->inputs_count.emplace_back(b_val.size());
 
+    std::vector<double> c(m * p, 0);
+    korotin_e_crs_multiplication_all::MatrixMultiplication(a, b, c, m, n, p);
+    korotin_e_crs_multiplication_all::MakeCRS(c_ri, c_col, c_val, c, m, p);
+
     out_ri = std::vector<unsigned int>(a_ri.size(), 0);
+    out_col = std::vector<unsigned int>(c_col.size());
+    out_val = std::vector<double>(c_val.size());
+
     task_data_all->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_ri.data()));
     task_data_all->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
     task_data_all->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
     task_data_all->outputs_count.emplace_back(out_ri.size());
-
-    std::vector<double> c(m * p, 0);
-    korotin_e_crs_multiplication_all::MatrixMultiplication(a, b, c, m, n, p);
-    korotin_e_crs_multiplication_all::MakeCRS(c_ri, c_col, c_val, c, m, p);
   }
 
   korotin_e_crs_multiplication_all::CrsMultiplicationALL test_task_all(task_data_all);
@@ -200,6 +203,8 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs_stat_zeroes) {
   test_task_all.PostProcessing();
 
   if (world.rank() == 0) {
+    if (c_col.size() != out_col.size()) std::cout << "\n" << c_col.size() << "   " << out_col.size() << std::endl;
+
     ASSERT_EQ(c_ri, out_ri);
     ASSERT_EQ(c_col, out_col);
     ASSERT_EQ(c_val, out_val);
@@ -212,6 +217,14 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs) {
   const unsigned int n = 50;
   const unsigned int p = 50;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
@@ -222,14 +235,6 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs) {
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
 
@@ -261,15 +266,18 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs) {
     task_data_all->inputs_count.emplace_back(b_col.size());
     task_data_all->inputs_count.emplace_back(b_val.size());
 
+    std::vector<double> c(m * p, 0);
+    korotin_e_crs_multiplication_all::MatrixMultiplication(a, b, c, m, n, p);
+    korotin_e_crs_multiplication_all::MakeCRS(c_ri, c_col, c_val, c, m, p);
+
     out_ri = std::vector<unsigned int>(a_ri.size(), 0);
+    out_col = std::vector<unsigned int>(c_col.size());
+    out_val = std::vector<double>(c_val.size());
+
     task_data_all->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_ri.data()));
     task_data_all->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_col.data()));
     task_data_all->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_val.data()));
     task_data_all->outputs_count.emplace_back(out_ri.size());
-
-    std::vector<double> c(m * p, 0);
-    korotin_e_crs_multiplication_all::MatrixMultiplication(a, b, c, m, n, p);
-    korotin_e_crs_multiplication_all::MakeCRS(c_ri, c_col, c_val, c, m, p);
   }
 
   korotin_e_crs_multiplication_all::CrsMultiplicationALL test_task_all(task_data_all);
@@ -279,6 +287,8 @@ TEST(korotin_e_crs_multiplication_all, test_rndcrs) {
   test_task_all.PostProcessing();
 
   if (world.rank() == 0) {
+    if (c_col.size() != out_col.size()) std::cout << "\n" << c_col.size() << "   " << out_col.size() << std::endl;
+
     ASSERT_EQ(c_ri, out_ri);
     ASSERT_EQ(c_col, out_col);
     ASSERT_EQ(c_val, out_val);
@@ -291,6 +301,14 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_20_40_60) {
   const unsigned int n = 40;
   const unsigned int p = 60;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
@@ -301,14 +319,6 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_20_40_60) {
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
     korotin_e_crs_multiplication_all::MakeCRS(a_ri, a_col, a_val, a, m, n);
@@ -358,6 +368,14 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_17_37_53) {
   const unsigned int n = 37;
   const unsigned int p = 53;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
@@ -368,14 +386,6 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_17_37_53) {
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
     korotin_e_crs_multiplication_all::MakeCRS(a_ri, a_col, a_val, a, m, n);
@@ -425,6 +435,14 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_16_32_64) {
   const unsigned int n = 32;
   const unsigned int p = 64;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
@@ -435,14 +453,6 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_16_32_64) {
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
     korotin_e_crs_multiplication_all::MakeCRS(a_ri, a_col, a_val, a, m, n);
@@ -492,6 +502,14 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_rnd_bords) {
   const unsigned int n = (rand() % 50) + 1;
   const unsigned int p = (rand() % 50) + 1;
 
+  std::vector<double> a;
+  std::vector<double> b;
+  std::vector<double> a_val;
+  std::vector<double> b_val;
+  std::vector<unsigned int> a_ri;
+  std::vector<unsigned int> a_col;
+  std::vector<unsigned int> b_ri;
+  std::vector<unsigned int> b_col;
   std::vector<double> c_val;
   std::vector<unsigned int> c_ri;
   std::vector<unsigned int> c_col;
@@ -502,14 +520,6 @@ TEST(korotin_e_crs_multiplication_all, test_rnd_rnd_bords) {
   auto task_data_all = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
-    std::vector<double> a;
-    std::vector<double> b;
-    std::vector<double> a_val;
-    std::vector<double> b_val;
-    std::vector<unsigned int> a_ri;
-    std::vector<unsigned int> a_col;
-    std::vector<unsigned int> b_ri;
-    std::vector<unsigned int> b_col;
     a = korotin_e_crs_multiplication_all::GetRandomMatrix(m, n);
     b = korotin_e_crs_multiplication_all::GetRandomMatrix(n, p);
     korotin_e_crs_multiplication_all::MakeCRS(a_ri, a_col, a_val, a, m, n);
