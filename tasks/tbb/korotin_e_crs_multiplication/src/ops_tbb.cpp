@@ -79,7 +79,7 @@ void korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::MulTask(size_t l, s
 }
 
 bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
-  std::vector<unsigned int> tr_i(*std::ranges::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
+  std::vector<unsigned int> tr_i(*std::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
   unsigned int i = 0;
   unsigned int j = 0;
   for (i = 0; i < B_Nz_; i++) {
@@ -103,7 +103,7 @@ bool korotin_e_crs_multiplication_tbb::CrsMultiplicationTBB::RunImpl() {
   }
   tr_i[0] = 0;
 
-  std::ranges::fill(output_rI_.begin(), output_rI_.end(), 0);
+  std::fill(output_rI_.begin(), output_rI_.end(), 0);
   output_col_.clear();
   output_val_.clear();
   unsigned int magic_const = 4;

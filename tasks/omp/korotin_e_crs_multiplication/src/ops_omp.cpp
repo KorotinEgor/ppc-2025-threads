@@ -46,7 +46,7 @@ bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::ValidationImpl() {
 }
 
 bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::RunImpl() {
-  std::vector<unsigned int> tr_i(*std::ranges::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
+  std::vector<unsigned int> tr_i(*std::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
   unsigned int i = 0;
   unsigned int j = 0;
   for (i = 0; i < B_Nz_; i++) {
@@ -73,7 +73,7 @@ bool korotin_e_crs_multiplication_omp::CrsMultiplicationOMP::RunImpl() {
   unsigned int ai = 0;
   unsigned int bt = 0;
   double sum = 0;
-  std::ranges::fill(output_rI_.begin(), output_rI_.end(), 0);
+  std::fill(output_rI_.begin(), output_rI_.end(), 0);
   output_col_.clear();
   output_val_.clear();
   std::vector<std::vector<double>> local_val(omp_get_max_threads());

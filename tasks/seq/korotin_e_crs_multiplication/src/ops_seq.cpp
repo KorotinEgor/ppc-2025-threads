@@ -44,7 +44,7 @@ bool korotin_e_crs_multiplication_seq::CrsMultiplicationSequential::ValidationIm
 }
 
 bool korotin_e_crs_multiplication_seq::CrsMultiplicationSequential::RunImpl() {
-  std::vector<unsigned int> tr_i(*std::ranges::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
+  std::vector<unsigned int> tr_i(*std::max_element(B_col_.begin(), B_col_.end()) + 2, 0);
   unsigned int i = 0;
   unsigned int j = 0;
   for (i = 0; i < B_Nz_; i++) {
