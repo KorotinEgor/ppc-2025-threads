@@ -152,13 +152,13 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
 
   // printf("%d is here3\n", world_.rank());
 
-  unsigned int local_a_n = A_N_ / world_.size();
+  unsigned int local_a_n = (A_N_ - 1) / world_.size();
   size_t start = 0;
-  if (world_.rank() < static_cast<int>(A_N_ % world_.size())) {
+  if (world_.rank() < static_cast<int>((A_N_ - 1) % world_.size())) {
     local_a_n++;
     start = local_a_n * world_.rank();
   } else {
-    start = (local_a_n * world_.rank()) + (A_N_ % world_.size());
+    start = (local_a_n * world_.rank()) + ((A_N_ - 1) % world_.size());
   }
 
   // printf("%d is here4\n", world_.rank());
@@ -166,8 +166,8 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
   output_rI_ = std::vector<unsigned int>(output_size_, 0);
   output_col_.clear();
   output_val_.clear();
-  unsigned int magic_const = std::thread::hardware_concurrency();
-  // unsigned int magic_const = ppc::util::GetPPCNumThreads();
+  // unsigned int magic_const = std::thread::hardware_concurrency();
+  unsigned int magic_const = ppc::util::GetPPCNumThreads();
   std::vector<std::vector<double>> local_val(magic_const);
   std::vector<std::vector<unsigned int>> local_col(magic_const);
   std::vector<unsigned int> temp_r_i(A_N_, 0);
@@ -175,8 +175,8 @@ bool korotin_e_crs_multiplication_all::CrsMultiplicationALL::RunImpl() {
 
   // printf("%d is here5\n", world_.rank());
 
-  std::vector<size_t> delta(magic_const, (local_a_n - 1) / magic_const);
-  for (i = 0; i < (local_a_n - 1) % magic_const; ++i) {
+  std::vector<size_t> delta(magic_const, local_a_n / magic_const);
+  for (i = 0; i < local_a_n % magic_const; ++i) {
     delta[i]++;
   }
   delta[0] += start;
